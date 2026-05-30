@@ -1,0 +1,235 @@
+﻿<Window x:Class="BlackBookAppWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:BlackBookAppWPF.Controls"
+        Title="Черная Книга" Height="800" Width="1400"
+        WindowStartupLocation="CenterScreen"
+        Background="#FF1E1E2A">
+
+    <Window.Resources>
+        <!-- Стиль для кнопок -->
+        <Style TargetType="Button" x:Key="GameButton">
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#FF4A4A56"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8" Padding="10,5">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF5A5A66"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX="0.98" ScaleY="0.98"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стиль для кнопок боссов -->
+        <Style TargetType="Button" x:Key="BossButton" BasedOn="{StaticResource GameButton}">
+            <Setter Property="Background" Value="#FF8B0000"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FFA50000"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стиль для кнопки удаления -->
+        <Style TargetType="Button" x:Key="DangerButton" BasedOn="{StaticResource GameButton}">
+            <Setter Property="Background" Value="#FF8B0000"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FFCC0000"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="280"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Верхняя панель с информацией -->
+        <Border Grid.Row="0" Grid.ColumnSpan="3" Background="#FF2D2D37" 
+                CornerRadius="0,0,15,15" Margin="0,0,0,5">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0">
+                <TextBlock x:Name="lblGold" FontSize="18" FontWeight="Bold" 
+                           Foreground="Gold" Margin="20,0">
+                    💰 Золото: 500
+                </TextBlock>
+                <TextBlock x:Name="lblCards" FontSize="18" FontWeight="Bold" 
+                           Foreground="Cyan" Margin="30,0">
+                    📚 Карт: 0
+                </TextBlock>
+                <TextBlock x:Name="lblDeckSize" FontSize="14" FontWeight="Bold" Foreground="Orange" Margin="30,0">
+                    📦 Колода: 0/50
+                </TextBlock>
+                <TextBlock x:Name="lblMissionProgress" FontSize="14" FontWeight="Bold" Foreground="#FFB9F7F3" Margin="30,0">
+                    🏰 Миссии: 0/10
+                </TextBlock>
+            </StackPanel>
+        </Border>
+
+        <!-- Левая панель с кнопками -->
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Margin="5" 
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="10">
+                <Button x:Name="btnShop" Content="🛒 МАГАЗИН" 
+                        Style="{StaticResource GameButton}" 
+                        Click="BtnShop_Click"/>
+                <Button x:Name="btnCollection" Content="📔 КОЛЛЕКЦИЯ" 
+                        Style="{StaticResource GameButton}" 
+                        Click="BtnCollection_Click"/>
+                <Button x:Name="btnDeckEditor" Content="🏗️ РЕДАКТОР КОЛОДЫ" 
+                        Style="{StaticResource GameButton}" 
+                        Click="BtnDeckEditor_Click"/>
+                <Button x:Name="btnWheel" Content="🎡 КОЛЕСО" 
+                        Style="{StaticResource GameButton}" 
+                        Click="BtnWheel_Click"/>
+                <Button x:Name="btnSave" Content="💾 СОХРАНИТЬ" 
+                        Style="{StaticResource GameButton}" 
+                        Click="BtnSave_Click"/>
+                <Button x:Name="btnLoadDeck" Content="📤 ЗАГРУЗИТЬ КОЛОДУ" 
+                        Style="{StaticResource GameButton}" 
+                        Click="BtnLoadDeck_Click"/>
+
+                <Separator Margin="0,20,0,10" Background="Gray" Height="2"/>
+
+                <Button x:Name="btnCampaign" Content="🏰 МИССИИ И БОССЫ" 
+                        Style="{StaticResource BossButton}" 
+                        Click="BtnCampaign_Click"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Центральная панель для отображения карт -->
+        <ScrollViewer Grid.Row="1" Grid.Column="1" Margin="5" 
+                      VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl x:Name="CardDisplayPanel" Margin="10">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <!-- Приветственное сообщение -->
+                <TextBlock Text="Добро пожаловать в Черную Книгу!
+Соберите колоду, откройте бустеры и побеждайте боссов в полноценной пошаговой битве." 
+                           FontSize="16" Foreground="Gray" 
+                           HorizontalAlignment="Center" Margin="50"/>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Правая панель с колодой -->
+        <Border Grid.Row="1" Grid.Column="2" Background="#FF2D2D37" 
+                CornerRadius="15" Margin="5">
+            <StackPanel>
+                <TextBlock Text="📦 ТЕКУЩАЯ КОЛОДА" 
+                           FontSize="14" FontWeight="Bold" 
+                           Foreground="Orange" 
+                           HorizontalAlignment="Center" 
+                           Margin="10,10,10,5"/>
+
+                <!-- Список карт в колоде -->
+                <ListBox x:Name="DeckListBox" 
+                         Background="#FF373741" 
+                         Foreground="White" 
+                         Height="350" 
+                         Margin="10,5,10,5" 
+                         FontSize="12"
+                         SelectionChanged="DeckListBox_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" Margin="5"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- Статистика колоды -->
+                <Border Background="#FF1E1E2A" CornerRadius="8" 
+                        Margin="10,5" Padding="10">
+                    <StackPanel>
+                        <TextBlock x:Name="lblDeckPower" 
+                                   FontSize="12" 
+                                   Foreground="LightGreen" 
+                                   HorizontalAlignment="Center"
+                                   Margin="0,2">
+                            ⚔️ Общая сила: 0
+                        </TextBlock>
+                        <TextBlock x:Name="lblDeckAvgCost" 
+                                   FontSize="12" 
+                                   Foreground="LightBlue" 
+                                   HorizontalAlignment="Center"
+                                   Margin="0,2">
+                            💧 Средняя стоимость: 0
+                        </TextBlock>
+                        <TextBlock x:Name="lblDeckCardCount" 
+                                   FontSize="12" 
+                                   Foreground="Gray" 
+                                   HorizontalAlignment="Center"
+                                   Margin="0,2">
+                            🃏 Количество карт: 0
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Кнопка удаления карты из колоды -->
+                <Button x:Name="btnRemoveFromDeck" 
+                        Content="🗑️ УДАЛИТЬ ВЫБРАННУЮ КАРТУ" 
+                        Style="{StaticResource DangerButton}"
+                        Height="40" FontSize="11"
+                        Margin="10,5,10,10"
+                        Click="BtnRemoveFromDeck_Click"
+                        Visibility="Collapsed"/>
+
+                <!-- Кнопка очистки колоды -->
+                <Button x:Name="btnClearDeck" 
+                        Content="🧹 ОЧИСТИТЬ КОЛОДУ" 
+                        Style="{StaticResource DangerButton}"
+                        Height="35" FontSize="11"
+                        Margin="10,5,10,10"
+                        Click="BtnClearDeck_Click"/>
+
+                <Border Background="#FF1E1E2A" CornerRadius="8" Margin="10,5" Padding="10">
+                    <StackPanel>
+                        <TextBlock Text="Как играть" FontSize="13" FontWeight="Bold" Foreground="#FFB9F7F3" HorizontalAlignment="Center"/>
+                        <TextBlock Text="1. Магазин: купите бустеры.&#x0a;2. Редактор колоды: нажимайте карты, чтобы добавить их справа.&#x0a;3. Сохранить: запишите профиль и текущую колоду.&#x0a;4. Миссии и боссы: проходите этапы по порядку."
+                                   FontSize="10" Foreground="#FFD6D6DA" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Text="💡 Совет: добавляйте в колоду не только силу, но и щиты, лечение, добор и контроль" 
+                           FontSize="9" Foreground="Gray" 
+                           TextWrapping="Wrap" 
+                           HorizontalAlignment="Center" 
+                           Margin="10,5,10,10"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,46 @@
+﻿<Window x:Class="BlackBookAppWPF.WheelWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="🎡 КОЛЕСО ФОРТУНЫ" Height="450" Width="550"
+        WindowStartupLocation="CenterOwner" Background="#FF2D2D37"
+        ResizeMode="NoResize">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="🎡 КОЛЕСО ФОРТУНЫ" 
+                   FontSize="24" FontWeight="Bold" 
+                   Foreground="Gold" 
+                   HorizontalAlignment="Center" 
+                   Margin="0,0,0,20"/>
+
+        <Border Grid.Row="1" Background="#FF1E1E2A" CornerRadius="20" 
+                Margin="20" BorderBrush="Orange" BorderThickness="3">
+            <Grid>
+                <TextBlock x:Name="lblResult" 
+                           Text="Нажмите КРУТИТЬ!" 
+                           FontSize="28" FontWeight="Bold" 
+                           Foreground="White" 
+                           HorizontalAlignment="Center" 
+                           VerticalAlignment="Center"
+                           TextAlignment="Center"/>
+
+                <TextBlock x:Name="lblTimer" 
+                           FontSize="14" Foreground="Gray" 
+                           HorizontalAlignment="Center" 
+                           VerticalAlignment="Bottom" 
+                           Margin="0,0,0,20"/>
+            </Grid>
+        </Border>
+
+        <Button x:Name="btnSpin" Grid.Row="2" 
+                Content="🎡 КРУТИТЬ!" 
+                Height="60" FontSize="18" FontWeight="Bold"
+                Background="#FFC86400" Foreground="White"
+                Click="BtnSpin_Click" Margin="50,20"/>
+    </Grid>
+</Window>

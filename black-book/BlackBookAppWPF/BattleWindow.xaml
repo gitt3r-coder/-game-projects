@@ -1,0 +1,201 @@
+<Window x:Class="BlackBookAppWPF.BattleWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Битва в Черной Книге" Height="900" Width="1220"
+        WindowStartupLocation="CenterOwner"
+        Background="#FF10131A"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <Style x:Key="BattleButton" TargetType="Button">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="MinWidth" Value="170"/>
+            <Setter Property="Margin" Value="7"/>
+            <Setter Property="Padding" Value="14,6"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#FF3A4257"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF53617D"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.42"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="96"/>
+            <RowDefinition Height="340"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="78"/>
+        </Grid.RowDefinitions>
+
+        <Border x:Name="TopPanel" Grid.Row="0" Background="#E01D2230" CornerRadius="12" Padding="18">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="280"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock x:Name="lblPlayerHP" Text="Игрок: 100/100" FontSize="20" FontWeight="Bold" Foreground="#FF9DF2A5"/>
+                    <ProgressBar x:Name="playerHealthBar" Height="18" Margin="0,8,0,0" Minimum="0" Maximum="100"
+                                 Background="#FF271C24" Foreground="#FF5AE889"/>
+                    <WrapPanel Margin="0,8,0,0">
+                        <TextBlock x:Name="lblPlayerShield" Text="Щит: 0" Foreground="#FF9ED6FF" FontWeight="Bold" Margin="0,0,18,0"/>
+                        <TextBlock x:Name="lblMana" Text="Мана: 3/3" Foreground="#FF8BEAFF" FontWeight="Bold" Margin="0,0,18,0"/>
+                        <ItemsControl x:Name="ManaPipsPanel" Margin="0,0,18,0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                        <TextBlock x:Name="lblDeckStats" Text="Колода 0 | Сброс 0" Foreground="#FFB8BBC8"/>
+                    </WrapPanel>
+                </StackPanel>
+
+                <Border Grid.Column="1" Background="#AA11151F" CornerRadius="10" Padding="12" Margin="12,0">
+                    <StackPanel>
+                        <TextBlock x:Name="lblTurn" Text="Ход 1" FontSize="19" FontWeight="Bold" Foreground="#FFFFD166"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="lblIntent" Text="Намерение босса" FontSize="13" Foreground="#FFFFA86A"
+                                   TextWrapping="Wrap" TextAlignment="Center" Margin="0,8,0,0" MaxHeight="42"/>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock x:Name="lblBossHP" Text="Босс: 200/200" FontSize="20" FontWeight="Bold" Foreground="#FFFF8B64"
+                               HorizontalAlignment="Right" TextTrimming="CharacterEllipsis"/>
+                    <ProgressBar x:Name="bossHealthBar" Height="18" Margin="0,8,0,0" Minimum="0" Maximum="200"
+                                 Background="#FF271C24" Foreground="#FFFF6B45"/>
+                    <WrapPanel HorizontalAlignment="Right" Margin="0,8,0,0">
+                        <TextBlock x:Name="lblBossShield" Text="Щит: 0" Foreground="#FF9ED6FF" FontWeight="Bold" Margin="0,0,18,0"/>
+                        <TextBlock x:Name="lblBossStatus" Text="Статусы: нет" Foreground="#FFD9B5FF" FontWeight="Bold"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="0,14,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="360"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="330"/>
+            </Grid.ColumnDefinitions>
+
+            <Border x:Name="SelectedInfoPanel" Background="#E01A1F2B" CornerRadius="12" Padding="18" Margin="0,0,12,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Информация о карте" FontSize="16" FontWeight="Bold" Foreground="#FFC7F9FF"/>
+                    <TextBlock x:Name="lblSelectedCardName" Grid.Row="1" Text="Нет выбора" FontSize="21" FontWeight="Bold"
+                               Foreground="White" TextWrapping="Wrap" Margin="0,14,0,8"/>
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                        <TextBlock x:Name="lblSelectedCardText" Text="Выберите карту из руки. Здесь появится стоимость, урон, эффект и роль карты в текущем ходе."
+                                   Foreground="#FFD5D9E6" TextWrapping="Wrap" FontSize="13" LineHeight="19"/>
+                    </ScrollViewer>
+                    <Border Grid.Row="3" Background="#3310AAB0" CornerRadius="8" Padding="10" Margin="0,14,0,0">
+                        <TextBlock Text="Щит гасит входящий урон. Ожог срабатывает в начале вашего хода. Слабость режет атаку босса. Оглушение отменяет действие босса."
+                                   Foreground="#FFB9F7F3" TextWrapping="Wrap" FontSize="11"/>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Background="#EE161922" CornerRadius="12" Padding="18">
+                <Grid x:Name="BattleStage" ClipToBounds="True">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock x:Name="lblBossTitle" Text="Босс" FontSize="30" FontWeight="Bold" Foreground="#FFFFD166"
+                               HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="76"/>
+
+                    <Grid Grid.Row="1">
+                        <Ellipse Width="310" Height="165" Fill="#361E0C0C" VerticalAlignment="Bottom" Margin="0,0,0,4"/>
+                        <Ellipse x:Name="BossAura" Width="250" Height="250" Fill="#18FF7A51" HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"/>
+                        <TextBlock x:Name="lblBossGlyph" Text="☠" FontSize="145" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Foreground="#FFFF745C" RenderTransformOrigin="0.5,0.5">
+                            <TextBlock.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </TextBlock.RenderTransform>
+                        </TextBlock>
+                        <Canvas x:Name="BattleEffectsCanvas" IsHitTestVisible="False"/>
+                        <Border x:Name="ActionBanner" Background="#DD05070B" BorderBrush="#66FFFFFF" BorderThickness="1"
+                                CornerRadius="12" Padding="16,10" HorizontalAlignment="Center" VerticalAlignment="Top"
+                                Margin="0,12,0,0" Opacity="0" RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="0.96" ScaleY="0.96"/>
+                            </Border.RenderTransform>
+                            <TextBlock x:Name="lblActionBanner" Text="Действие" FontSize="20" FontWeight="Bold"
+                                       Foreground="#FFFFF3CC" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="440"/>
+                        </Border>
+                    </Grid>
+
+                    <Border Grid.Row="2" Background="#77111620" CornerRadius="10" Padding="10" Margin="0,8,0,0">
+                        <TextBlock x:Name="lblBattlePulse" Text="Черная книга раскрыта" FontSize="13" Foreground="#FFD0D4E2"
+                                   TextWrapping="Wrap" TextAlignment="Center"/>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2" Background="#E01A1F2B" CornerRadius="12" Padding="12" Margin="12,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Журнал боя" FontSize="15" FontWeight="Bold" Foreground="#FFC7F9FF" Margin="4"/>
+                    <ListBox x:Name="BattleLogList" Grid.Row="1" Background="#FF10131B" Foreground="#FFDADDE8"
+                             BorderThickness="0" FontSize="11" Margin="0,8,0,0"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2" Background="#E01A1F2B" CornerRadius="12" Padding="12">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Рука" FontSize="16" FontWeight="Bold" Foreground="#FFC7F9FF" Margin="5,0,0,8"/>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <WrapPanel x:Name="HandPanel"/>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button x:Name="btnPlayCard" Content="СЫГРАТЬ КАРТУ" Style="{StaticResource BattleButton}"
+                    Background="#FF2D8F73" Click="BtnPlayCard_Click" IsEnabled="False"/>
+            <Button x:Name="btnEndTurn" Content="ЗАВЕРШИТЬ ХОД" Style="{StaticResource BattleButton}"
+                    Background="#FF5B4D9A" Click="BtnEndTurn_Click"/>
+            <Button x:Name="btnClose" Content="СДАТЬСЯ" Style="{StaticResource BattleButton}"
+                    Background="#FF6E3232" Click="BtnClose_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
